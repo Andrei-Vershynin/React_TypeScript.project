@@ -1,10 +1,9 @@
-
-import type { Repository } from '../domain/post/repository';
-import type { Post } from '../domain/post/entity';
+import type { Post } from '../domain/post/category/entity';
+import type { Repository } from '../domain/post/category/repository';
 
 type DB = any;
 
-export const createPostRepository = (db: DB): Repository => {
+export const createProductRepository = (db: DB): Repository => {
   const posts = db.orm.public.Post;
 
   const toPost = (row: any): Post => ({
@@ -49,3 +48,35 @@ export const createCategoryRepository = (db: any) => ({
   findByName: (name: string) => db.category.findUnique({ where: { name } }),
   create: (name: any) => db.category.create({ data: { name } }),
 });
+
+export interface RefreshSessionRecord {
+  id: string;
+  userId: string;
+  tokenHash: string;
+  expiresAt: Date;
+}
+
+export class RefreshSessionRepository {
+  private readonly db: any;
+
+  constructor(db: any) {
+    this.db = db;
+  }
+
+  create(data: { userId: string; tokenHash: string; expiresAt: Date }) {
+    return this.db.refreshSession.create({ data });
+  }
+
+  findByHash(tokenHash: string) {
+    return this.db.refreshSession.findUnique({ where: { tokenHash } });
+  }
+
+  async deleteByHash(tokenHash: string): Promise<boolean> {
+    const { count } = await this.db.refreshSession.deleteMany({ where: { tokenHash } });
+    return count > 0;
+  }
+
+  deleteExpired() {
+    return this.db.refreshSession.deleteMany({ where: { expiresAt: { lt: new Date() } } });
+  }
+}

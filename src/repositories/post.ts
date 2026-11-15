@@ -1,5 +1,5 @@
-import type { Post } from '../domain/post/entity';
-import type { Repository } from '../domain/post/repository';
+import type { Post } from '../domain/post/category/entity';
+import type { Repository } from '../domain/post/category/repository';
 
 export function createPostRepository(): Repository {
   const posts: Post[] = [
@@ -13,7 +13,7 @@ export function createPostRepository(): Repository {
   let nextId = posts.length + 1;
 
   return {
-    async getAll(category, take) {
+    async getAll(category: string, take: number | undefined) {
       let result = posts;
 
       if (category) {
