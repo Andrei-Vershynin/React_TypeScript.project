@@ -14,7 +14,7 @@ export function createCategoryService(
       return repository.getById(id);
     },
 
-    async create(dto) {
+    async create(dto: { name: string; }) {
       if (typeof dto.name !== "string") {
         throw new Error("INVALID_CATEGORY_DATA");
       }
