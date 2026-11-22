@@ -1,7 +1,7 @@
 import type { RefreshRepository } from "../../domain/post/refresh-session/repository"
 import type { UserRepository } from "../../domain/post/user/repository"
 
-interface PasswordHasher {
+export interface PasswordHasher {
     hash(password: string): Promise<string>
     verify(hash: string, password: string): Promise<boolean>
 }
@@ -19,7 +19,7 @@ interface RefreshTokenHasher {
     hash(refreshToken: string): string
 }
 
-interface UserService {
+export interface UserService {
     register(input: { email: string; password: string }): Promise<{ id: number; email: string }>
     login(input: { email: string; password: string }): Promise<{
         user: { id: number; email: string }
@@ -47,6 +47,12 @@ export function createAuthService(
             const user = await repository.createUser({
                 email: email.trim().toLowerCase(),
                 hashPassword: passwordHash,
+                password: function (_password: any, _password1: string): unknown {
+                    throw new Error("Function not implemented.")
+                },
+                passwordHash: function (_passwordHash: any, _password: string): unknown {
+                    throw new Error("Function not implemented.")
+                }
             })
             return {
                 id: user.id,

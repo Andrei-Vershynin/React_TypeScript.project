@@ -1,5 +1,15 @@
-import type { Post } from '../domain/post/category/entity';
-import type { Repository } from '../domain/post/category/repository';
+type Post = {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+};
+
+type Repository = {
+  getAll(input: { category?: Post['category']; take?: number }): Promise<Post[]>;
+  getById(id: Post['id']): Promise<Post | null>;
+  addPost(input: Pick<Post, 'title' | 'content' | 'category'> & { author: string }): Promise<Post>;
+};
 
 type DB = any;
 
